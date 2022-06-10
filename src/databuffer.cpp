@@ -13,23 +13,22 @@ void BinaryDataBuffer::WriteData(const char* data, const int len){
   size_ += len; 
 }
 
-char* BinaryDataBuffer::ReadData(const int len){
-  char* ret_data = new char[len];
-  memcpy(ret_data, data_+offset_, len);
+bool BinaryDataBuffer::ReadData(char* data, const int len){
+  if(offset_+len > size_) return false; //If overflow, return nullptr
+  memcpy(data, data_+offset_, len);
   offset_ += len;
-  return ret_data;
+  return true;
 }
 
 bool BinaryDataBuffer::WriteDataToDataFile(std::fstream& fs){
   fs.write(data_, size_);
-  /*When write data to data file, it means clear the buffer*/
-  Clear();
   return true;
 }
 
+
 bool BinaryDataBuffer::ReadDataFromDataFile(std::fstream& fs, const int len){
   while(!CheckCapacity(len)) Reallocate();  
-  fs.read(data_ +size_, len);
+  fs.read(data_+size_, len);
   size_ += len;
   return true;
 }

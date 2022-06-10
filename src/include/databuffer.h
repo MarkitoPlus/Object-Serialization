@@ -39,7 +39,7 @@ public:
    * 
    * @note the offset of the buffer will be adjusted during writing.
    */
-  char* ReadData(const int len);
+  bool ReadData(char* data, const int len);
 
   /**
    * @brief Write the whole data into .data file
