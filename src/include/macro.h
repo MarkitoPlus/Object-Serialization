@@ -6,6 +6,10 @@
 /********************************************************************************/
 #define ASSERT(expr, message) assert((expr) && (message))
 
+#define ASSERT_EQ(expr1, expr2, message) ASSERT((expr1) == (expr2), message)
+
+#define ASSERT_NE(expr1, expr2, message) ASSERT((expr1) != (expr2), message)
+
 #define COMMA ,
 
 #define CPTR(val) reinterpret_cast<char*>(&val)
@@ -29,12 +33,12 @@ const int BSUDT_MAGIC_NUM = 838983;
 /********************************************************************************/
 /*                           BinSerData I/O method MACRO                        */
 /********************************************************************************/
-#define BinSerTypeI(type_parm)  static BinSerData* GetInstance(const type_parm& val);  
+#define BinSerTypeI(type_parm)  static BinSerData* GetInstance(type_parm& val);  
                          
 #define BinSerTypeO(type_parm)  bool ReadData(type_parm& val);
 
 #define BinSerArithmeticDataI(type_parm, type_parm_id)                                                          \
-BinSerData* BinSerData::GetInstance(const type_parm& type_arithmetic_val){                                      \
+BinSerData* BinSerData::GetInstance(type_parm& type_arithmetic_val){                                            \
   BinSerArithmeticData* ret_bsad_arithmetic_data = new BinSerArithmeticData(type_parm_id, type_arithmetic_val); \
   return ret_bsad_arithmetic_data;                                                                              \
 }                                                                                                               
@@ -49,7 +53,7 @@ bool BinSerData::ReadData(type_parm& type_arithmetic_val){                      
 }
 
 #define BinSerContainerDataI(type_parm, type_parm_id, container_type_id)                                        \
-BinSerData* BinSerData::GetInstance(const type_parm& type_container_val){                                       \
+BinSerData* BinSerData::GetInstance(type_parm& type_container_val){                                             \
   BinSerContainerData* container_data =                                                                         \
   new BinSerContainerData(type_parm_id, container_type_id, type_container_val);                                 \
   return container_data;                                                                                        \

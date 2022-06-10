@@ -2,7 +2,7 @@
 
 using namespace mkbf;
 
-explicit BinaryDataBuffer::BinaryDataBuffer(): offset_(0), size_(0), capacity_(DATA_BUFFER_INI_CAPACITY), data_(nullptr){
+BinaryDataBuffer::BinaryDataBuffer(): offset_(0), size_(0), capacity_(DATA_BUFFER_INI_CAPACITY), data_(nullptr){
   data_ = new char[capacity_];
 }
 
