@@ -74,7 +74,7 @@ bool BinSerData::ReadData(type_parm& type_container_val){                       
 /********************************************************************************/
 #define UserDefinedSerDataParameter(Ser_para)               \
   bool WriteInData(BinSerUserDefinedTypeData* bsudt_data){  \
-    BSUDTWriteExecutor bsudt_write_executor(bsudt_data);   \
+    BSUDTWriteExecutor bsudt_write_executor(bsudt_data);    \
     bsudt_write_executor+Ser_para;                          \
     return true;                                            \
   }                                                         \
@@ -95,8 +95,9 @@ bool BinSerData::ReadData(type_parm& type_container_val){                       
       deserialize_val = new BinSerArithmeticData(type_id, 0);                                                   \
     }                                                                                                           \
     else if(type_id>TypeId::v_Ari_Con_bound && type_id<TypeId::v_Con_Urd_bound){                                \
+      std::string empty_string_ = "";                                                                           \
       deserialize_val = BSCPTR(deserialize_val);                                                                \
-      deserialize_val = new BinSerContainerData(type_id, ContainerTypeId::ct_invalid_t, empty_string);          \
+      deserialize_val = new BinSerContainerData(type_id, ContainerTypeId::ct_invalid_t, empty_string_);         \
     }                                                                                                           \
     else if(type_id == TypeId::user_defined_t){                                                                 \
       deserialize_val = BSUDTPTR(deserialize_val);                                                              \

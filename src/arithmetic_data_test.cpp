@@ -4,7 +4,7 @@ int main(){
   std::cout << "Check Point 0" << std::endl;
   /*0. Create test file */
   std::fstream test_file;
-  test_file.open("arithmetic_data_testf.dat", std::ios::out|std::ios::binary);
+  test_file.open("arithmetic_data_testf.dat", std::ios::out|std::ios::binary|std::ios::trunc);
   if(!test_file.is_open()) {
     std::cout << "Fail to open .dat file ";
   }

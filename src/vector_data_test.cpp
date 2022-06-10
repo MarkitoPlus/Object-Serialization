@@ -4,7 +4,7 @@ int main(){
   std::cout << "Check Point 0" << std::endl;
   /*0. Create test file */
   std::fstream test_file;
-  test_file.open("arithmetic_data_testf.dat", std::ios::out|std::ios::binary);
+  test_file.open("vector_data_testf.dat", std::ios::out|std::ios::binary|std::ios::trunc);
   if(!test_file.is_open()) {
     std::cout << "Fail to open .dat file ";
   }
@@ -26,7 +26,10 @@ int main(){
   std::pair<float, double> s_pair;
   s_pair.first = 99.9; s_pair.second = 100.0001;
   std::map<int, char>      s_map;
-  for(int i = 0; i<10; i++) s_map.insert(i, 'a'+i);
+  for(int i = 0; i<10; i++) {
+    std::pair<int, char> tmp_p(i, 'a'+i);
+    s_map.insert(tmp_p);
+  }
 
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_string), "Enqueue string val fails");
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_vector), "Enqueue vector val fails");

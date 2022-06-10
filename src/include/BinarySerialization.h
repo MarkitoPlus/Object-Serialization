@@ -11,6 +11,7 @@
 #include <iostream>
 #include "databuffer.h"
 #include "type.h"
+#include "macro.h"
 
 namespace mkbs{
 /********************************************************************************/
@@ -207,22 +208,22 @@ class BinSerContainerData: public BinSerData{
 public:
   explicit BinSerContainerData() = delete;
 
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::string& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::string& val);
 
   template<typename T>
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::vector<T>& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::vector<T>& val);
 
   template<typename T>
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::list<T>& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::list<T>& val);
 
   template<typename T>
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::set<T>& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::set<T>& val);
 
   template<typename T1, typename T2>
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::pair<T1, T2>& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::pair<T1, T2>& val);
 
   template<typename T1, typename T2>
-  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::map<T1, T2>& val);
+  explicit BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::map<T1, T2>& val);
 
   bool GetContainerData(std::string& val);
 
@@ -419,7 +420,10 @@ public:
    *  
    */
   template<typename T>
-  bool Enqueue(T val);
+  bool Enqueue(T val){
+     binary_serialization_data_.emplace_back(BinSerData::GetInstance(val));
+    return true;
+  }
 
   /**
    * @brief Dequeue the data from BinSerExecutor to value
@@ -431,7 +435,12 @@ public:
    * @return false Fail to dequeue
    */
   template<typename T>
-  bool Dequeue(T& val);
+  bool Dequeue(T& val){
+    if(binary_serialization_executor_header_->offset_ >= binary_serialization_data_.size()) return false; 
+    else if(!binary_serialization_data_.at(binary_serialization_executor_header_->offset_)->ReadData(val)) return false;
+    binary_serialization_executor_header_->offset_++;
+    return true;
+  }
 
 private:
   BinSerExecutorHeader*     binary_serialization_executor_header_; //The header of the executor
@@ -465,10 +474,8 @@ private:
 
 
 
-
-
-
-
+using namespace mkbs;
+#include "BinarySerialization.h"
 
 using namespace mkbs;
 
@@ -477,15 +484,6 @@ using namespace mkbs;
 /********************************************************************************/
 BinSerArithmeticDataI(bool, TypeId::bool_t)
 BinSerArithmeticDataO(bool, TypeId::bool_t)
-// bool BinSerData::ReadData(bool& type_arithmetic_val){ 
-//   int k1, k2;
-//   char tmp = CPTR(type_id_)[0];
-//   k1 = tmp;
-//   std::cout << "HSH: "<<k1<<std::endl;
-//   if(type_id_ != TypeId::bool_t) return false; 
-//   reinterpret_cast<BinSerArithmeticData*>(this)->GetArithmeticData(type_arithmetic_val); 
-//   return true; 
-// }
 
 BinSerArithmeticDataI(char, TypeId::char_t)
 BinSerArithmeticDataO(char, TypeId::char_t)
@@ -732,7 +730,7 @@ bool BinSerContainerDataHeader::DeserializeBSCHeaderFromBuf(mkbf::BinaryDataBuff
 /********************************************************************************/
 /*                              BinSerContainerData                             */
 /********************************************************************************/
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::string& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::string& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(val.size(), container_type_id);
   for(int i = 0; i<val.size(); i++){
     char tmp_val = val.at(i);
@@ -741,34 +739,50 @@ BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId contain
 }
 
 template<typename T>
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::vector<T>& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::vector<T>& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(val.size(), container_type_id);
-  for(int i = 0; i<val.size(); i++) bin_ser_container_data_.emplace_back(BinSerData::GetInstance(val.at(i)));
+  for(int i = 0; i<val.size(); i++){
+    T tmp_val = val.at(i);
+    bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val));
+  } 
 }
 
 template<typename T>
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::list<T>& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::list<T>& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(val.size(), container_type_id);
-  for(auto it = val.begin(); it!=val.end() ;it++) bin_ser_container_data_.emplace_back(BinSerData::GetInstance(*it));
+  for(auto it = val.begin(); it!=val.end() ;it++) {
+    T tmp_val = *it;
+    bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val));
+  }
 }
 
 template<typename T>
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::set<T>& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::set<T>& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(val.size(), container_type_id);
-  for(auto it = val.begin(); it!=val.end() ;it++) bin_ser_container_data_.emplace_back(BinSerData::GetInstance(*it));
+  for(auto it = val.begin(); it!=val.end() ;it++){
+    T tmp_val = *it;
+    bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val));
+  } 
 }
 
 template<typename T1, typename T2>
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::pair<T1, T2>& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::pair<T1, T2>& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(2, container_type_id);
-  bin_ser_container_data_.emplace_back(BinSerData::GetInstance(val.first));
-  bin_ser_container_data_.emplace_back(BinSerData::GetInstance(val.second));
+  T1 tmp_val1 = val.first;
+  T2 tmp_val2 = val.second;
+  bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val1));
+  bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val2));
 }
 
 template<typename T1, typename T2>
-BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, const std::map<T1, T2>& val): BinSerData(type_id){
+BinSerContainerData::BinSerContainerData(TypeId type_id, ContainerTypeId container_type_id, std::map<T1, T2>& val): BinSerData(type_id){
   bin_ser_container_data_header_ = new BinSerContainerDataHeader(val.size(), container_type_id);
-  for(auto it = val.begin(); it!=val.end() ;it++) bin_ser_container_data_.emplace_back(BinSerData::GetInstance(reinterpret_cast<std::pair<T1, T2>>(*it)));
+  for(auto it = val.begin(); it!=val.end() ;it++){
+    std::pair<T1, T2> tmp_val;
+    tmp_val.first = it->first;
+    tmp_val.second = it->second;
+    bin_ser_container_data_.emplace_back(BinSerData::GetInstance(tmp_val));
+  }
 }
 
 bool BinSerContainerData::GetContainerData(std::string& val){
@@ -938,6 +952,7 @@ bool BinSerUserDefinedTypeData::DeserializeDataFromBuf(mkbf::BinaryDataBuffer* b
 BSUDTWriteExecutor::BSUDTWriteExecutor(BinSerUserDefinedTypeData* bsudt): bsudt_(bsudt){
 }
 
+
 template<typename T>
 BSUDTWriteExecutor& BSUDTWriteExecutor::operator+(const T& val){
   bsudt_->bsudt_data_.emplace_back(BinSerData::GetInstance(val));
@@ -1071,19 +1086,6 @@ bool BinSerExecutor::DeserializeFromDataFile(std::fstream& fs){
 
   return true;
 }
-
-template<typename T>
-bool BinSerExecutor::Enqueue(T val){
-  binary_serialization_data_.emplace_back(BinSerData::GetInstance(val));
-  return true;
-}
-
-template<typename T>
-bool BinSerExecutor::Dequeue(T& val){
-  if(binary_serialization_executor_header_->offset_ >= binary_serialization_data_.size()) return false; 
-  else if(!binary_serialization_data_.at(binary_serialization_executor_header_->offset_)->ReadData(val)) return false;
-  binary_serialization_executor_header_->offset_++;
-  return true;
-}
+//template void SwapType<int>(int &a, int &b);
 
 #endif

@@ -42,6 +42,4 @@ enum class ContainerTypeId: unsigned char{
   ct_double_t  // The container that stores two kinds of data type eg. std::map, std::pair
 };
 
-const std::string empty_string = "";
-
 #endif
