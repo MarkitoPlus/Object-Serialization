@@ -1087,6 +1087,5 @@ bool BinSerExecutor::DeserializeFromDataFile(std::fstream& fs){
 
   return true;
 }
-//template void SwapType<int>(int &a, int &b);
 
 #endif

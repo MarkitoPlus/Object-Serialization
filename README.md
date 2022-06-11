@@ -1,6 +1,8 @@
 8# Object-Serialization
 面向对象程序设计期末大作业 二进制序列化与XML序列化
 
+零、说明:实在抱歉.XML模块因为时间原因无法添加,考试前本人一定上交补全代码！
+
 一、支持的数据类型(可参考./include/type.h)
 /************************************************/
 /  bool                                          /
@@ -88,3 +90,4 @@ class User_Data: public IBinSerUserDefinedType{
   位置：./src/test/user_defined_type_data_test
   编译命令：g++ user_defined_type_data_test.cpp ../databuffer.cpp -I '../include/' -o 'user_defined_type_data_test.exe'
   执行命令：./user_defined_type_data_test
+
