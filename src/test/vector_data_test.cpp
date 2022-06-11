@@ -30,6 +30,8 @@ int main(){
     std::pair<int, char> tmp_p(i, 'a'+i);
     s_map.insert(tmp_p);
   }
+  std::vector<std::pair<float, double>> complicated_s_vector;
+  complicated_s_vector.emplace_back(s_pair);
 
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_string), "Enqueue string val fails");
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_vector), "Enqueue vector val fails");
@@ -37,6 +39,7 @@ int main(){
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_set), "Enqueue set val fails");
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_pair), "Enqueue pair val fails");
   ASSERT_EQ(true, test_bin_ser_executor.Enqueue(s_map), "Enqueue map val fails");
+  ASSERT_EQ(true, test_bin_ser_executor.Enqueue(complicated_s_vector), "Enqueue map val fails");
   std::cout << "Check Point 3" << std::endl;
 
   /*3. Serialize all the data into file */
@@ -57,6 +60,7 @@ int main(){
   std::set<int>            t_set;
   std::pair<float, double> t_pair;
   std::map<int, char>      t_map;
+  std::vector<std::pair<float, double>> complicated_t_vector;
 
   ASSERT_EQ(true, test_bin_ser_executor.Dequeue(t_string), "Dequeue string val fails"); 
   ASSERT_EQ(true, test_bin_ser_executor.Dequeue(t_vector), "Dequeue vector val fails"); 
@@ -64,6 +68,7 @@ int main(){
   ASSERT_EQ(true, test_bin_ser_executor.Dequeue(t_set), "Dequeue set val fails"); 
   ASSERT_EQ(true, test_bin_ser_executor.Dequeue(t_pair), "Dequeue  val fails");  
   ASSERT_EQ(true, test_bin_ser_executor.Dequeue(t_map), "Dequeue map val fails"); 
+  ASSERT_EQ(true, test_bin_ser_executor.Dequeue(complicated_t_vector), "Dequeue map val fails"); 
   std::cout << "Check Point 6" << std::endl;
 
   /*6. Test the correctness of the value */
@@ -73,7 +78,7 @@ int main(){
   ASSERT_EQ(s_set, t_set, "set val not equal");
   ASSERT_EQ(s_pair, t_pair, "pair val not equal");
   ASSERT_EQ(s_map, t_map, "map val not equal");
-
+  ASSERT_EQ(complicated_s_vector, complicated_t_vector, "map val not equal");
 
   std::cout << "PASSED" << std::endl;
 

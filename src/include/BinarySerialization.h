@@ -101,8 +101,8 @@ public:
   BinSerTypeO(std::map<T1 COMMA T2>)
 
   /*user defined type I/O*/
-  static BinSerData* GetInstance(IBinSerUserDefinedType* val);
-  bool ReadData(IBinSerUserDefinedType* val);
+  static BinSerData* GetInstance(IBinSerUserDefinedType& val);
+  bool ReadData(IBinSerUserDefinedType& val);
 
   /**
    * @brief Serialize Data type into buffer
@@ -525,13 +525,13 @@ BinSerContainerDataI(std::map<T1 COMMA T2>, TypeId::std_map_t, ContainerTypeId::
 template<typename T1, typename T2>
 BinSerContainerDataO(std::map<T1 COMMA T2>, TypeId::std_map_t)
 
-BinSerData* BinSerData::GetInstance(IBinSerUserDefinedType* val){
+BinSerData* BinSerData::GetInstance(IBinSerUserDefinedType& val){
   BinSerUserDefinedTypeData* user_defined_data = new BinSerUserDefinedTypeData(TypeId::user_defined_t);
-  val->WriteInData(user_defined_data);
+  val.WriteInData(user_defined_data);
   return user_defined_data;
 }
-bool BinSerData::ReadData(IBinSerUserDefinedType* val){
-  if(type_id_!=TypeId::user_defined_t || !val->ReadOutData(BSUDTPTR(this))) return false;
+bool BinSerData::ReadData(IBinSerUserDefinedType& val){
+  if(type_id_!=TypeId::user_defined_t || !val.ReadOutData(BSUDTPTR(this))) return false;
   return true;
 }
 

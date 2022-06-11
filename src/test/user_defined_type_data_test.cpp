@@ -27,7 +27,7 @@ int main(){
 
   User_Defined* t_user_defined = new User_Defined();
 
-  ASSERT_EQ(true, test_bin_ser_executor.Enqueue(t_user_defined), "Enqueue bool val fails");
+  ASSERT_EQ(true, test_bin_ser_executor.Enqueue(*t_user_defined), "Enqueue bool val fails");
   std::cout << "Check Point 3" << std::endl;
 
   /*3. Serialize all the data into file */
@@ -44,7 +44,7 @@ int main(){
   /*5. Dequeue the arithmetic value */
   User_Defined* s_user_defined = new User_Defined();
 
-  ASSERT_EQ(true, test_bin_ser_executor.Dequeue(s_user_defined), "Dequeue bool val fails"); 
+  ASSERT_EQ(true, test_bin_ser_executor.Dequeue(*s_user_defined), "Dequeue bool val fails"); 
   std::cout << "Check Point 6" << std::endl;
 
   /*6. Test the correctness of the value */
