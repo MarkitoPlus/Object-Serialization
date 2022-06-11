@@ -79,7 +79,7 @@ bool BinSerData::ReadData(type_parm& type_container_val){                       
     return true;                                            \
   }                                                         \
   bool ReadOutData(BinSerUserDefinedTypeData* bsudt_data){  \
-    BSUDTReadExecutor bsudt_read_executor(&bsudt_data);     \
+    BSUDTReadExecutor bsudt_read_executor(bsudt_data);      \
     bsudt_read_executor+Ser_para;                           \
     return true;                                            \
   }                                                        

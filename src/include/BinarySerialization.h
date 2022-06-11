@@ -25,7 +25,7 @@ class IBinSerUserDefinedType{
 public:
   virtual bool WriteInData(BinSerUserDefinedTypeData* bsudt_data) = 0;
 
-  virtual bool ReadOutData(const BinSerUserDefinedTypeData* bsudt_data) = 0;
+  virtual bool ReadOutData(BinSerUserDefinedTypeData* bsudt_data) = 0;
 };
 
 /* Basic binaray serialization class providing interface for executor */
@@ -129,7 +129,7 @@ public:
    */
   virtual bool DeserializeDataFromBuf(mkbf::BinaryDataBuffer* binaray_data_buffer);
 
-protected:
+public:
   TypeId type_id_; // The type f the data, more details in type.h
 };
 
@@ -320,7 +320,7 @@ public:
   explicit BSUDTWriteExecutor(BinSerUserDefinedTypeData* bsudt);
 
   template<typename T>
-  BSUDTWriteExecutor& operator+(const T& val);
+  BSUDTWriteExecutor& operator+(T& val);
 
 private:
   BinSerUserDefinedTypeData* bsudt_;
@@ -913,7 +913,8 @@ bool BinSerUserDefinedTypeDataHeader::DeserializeBSUDTHeaderFromBuf(mkbf::Binary
 /********************************************************************************/
 /*                          BinSerUserDefinedTypeData                           */
 /********************************************************************************/
-BinSerUserDefinedTypeData::BinSerUserDefinedTypeData(TypeId type_id): BinSerData(type_id), bsudt_data_header_(0), offset_(0){
+BinSerUserDefinedTypeData::BinSerUserDefinedTypeData(TypeId type_id): BinSerData(type_id), offset_(0){
+  bsudt_data_header_ = new BinSerUserDefinedTypeDataHeader(0);
 }
 
 bool BinSerUserDefinedTypeData::SerializeDataToBuf(mkbf::BinaryDataBuffer* binary_data_buffer){
@@ -921,7 +922,7 @@ bool BinSerUserDefinedTypeData::SerializeDataToBuf(mkbf::BinaryDataBuffer* binar
   SerializeTypeToBuf(binary_data_buffer);
 
   /*1. Serialize the header of the container */
-  bsudt_data_header_->size_ = bsudt_data_.size();
+  bsudt_data_header_->size_ = bsudt_data_.size();  
   bsudt_data_header_->SerializeBSUDTHeaderToBuf(binary_data_buffer);
 
   /*2. Serialize the actual data of the container */
@@ -954,7 +955,7 @@ BSUDTWriteExecutor::BSUDTWriteExecutor(BinSerUserDefinedTypeData* bsudt): bsudt_
 
 
 template<typename T>
-BSUDTWriteExecutor& BSUDTWriteExecutor::operator+(const T& val){
+BSUDTWriteExecutor& BSUDTWriteExecutor::operator+( T& val){
   bsudt_->bsudt_data_.emplace_back(BinSerData::GetInstance(val));
   return *this;
 }

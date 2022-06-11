@@ -46,7 +46,7 @@ int main(){
 
 
   /*4. Deserialize all the data from file */ 
-  test_file.open("arithmetic_data_testf.dat", std::ios::in|std::ios::binary);
+  test_file.open("vector_data_testf.dat", std::ios::in|std::ios::binary);
   ASSERT_EQ(true, test_bin_ser_executor.DeserializeFromDataFile(test_file),"Deserialize fails");
   std::cout << "Check Point 5" << std::endl;
 
